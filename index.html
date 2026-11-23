@@ -622,20 +622,52 @@
       return `treat_deal_${now.getFullYear()}_${now.getMonth() + 1}`;
     }
 
-    // Auto-resets on the 1st because the month key changes automatically
-    function checkMonthRollover() {
-      const currentKey = getMonthKey();
-      const savedMonth = localStorage.getItem('current_active_month');
+    // Load local state immediately, then replace it with shared state
+    let state = JSON.parse(localStorage.getItem(getMonthKey())) || JSON.parse(JSON.stringify(defaultState));
+    let sharedSyncReady = false;
 
-      if (savedMonth !== currentKey) {
-        localStorage.setItem('current_active_month', currentKey);
-        state = JSON.parse(JSON.stringify(defaultState));
-        localStorage.setItem(currentKey, JSON.stringify(state));
+    async function saveSharedState() {
+      localStorage.setItem(getMonthKey(), JSON.stringify(state));
+
+      try {
+        const response = await fetch('/api/deal', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ monthKey: getMonthKey(), state })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Shared save failed: ${response.status}`);
+        }
+      } catch (error) {
+        console.warn(error.message);
       }
     }
 
-    // Load active month state
-    let state = JSON.parse(localStorage.getItem(getMonthKey())) || JSON.parse(JSON.stringify(defaultState));
+    async function loadSharedState() {
+      try {
+        const response = await fetch('/api/deal', { cache: 'no-store' });
+        if (!response.ok) throw new Error(`Shared load failed: ${response.status}`);
+
+        const shared = await response.json();
+        if (!shared || !shared.state) return;
+
+        const currentKey = getMonthKey();
+        if (shared.monthKey !== currentKey) {
+          state = JSON.parse(JSON.stringify(defaultState));
+          sharedSyncReady = true;
+          await saveSharedState();
+        } else {
+          state = shared.state;
+        }
+
+        localStorage.setItem(currentKey, JSON.stringify(state));
+        render();
+      } catch (error) {
+        console.warn(error.message);
+        render();
+      }
+    }
     // Celebration Messages
     const celebratoryQuotes = {
       treat1: {
@@ -689,9 +721,7 @@
       const isAlreadyDone = state[person][itemKey];
       state[person][itemKey] = !isAlreadyDone;
 
-      // Save to localStorage
-// Save to month-specific key
-      localStorage.setItem(getMonthKey(), JSON.stringify(state));
+      saveSharedState();
 
       if (!isAlreadyDone) {
         // Celebrating action!
@@ -825,16 +855,15 @@
         krishu: { treat1: false, treat2: false, contri: false },
         rishu: { treat1: false, treat2: false, contri: false }
       };
-localStorage.setItem(getMonthKey(), JSON.stringify(state));      closeResetModal();
+      saveSharedState();
+      closeResetModal();
       showCelebration("NEW MONTH READY! GAME ON! 🍕🔥", "🚀");
       playTone('fanfare');
       render();
     }
 
-// Dynamic Month & Current Date Header + 1st-of-Month Auto-Reset Check
+// Dynamic Month & Shared State Header
     window.onload = function() {
-      checkMonthRollover();
-
       const now = new Date();
       const monthNames = [
         "January", "February", "March", "April", "May", "June", 
@@ -846,6 +875,8 @@ localStorage.setItem(getMonthKey(), JSON.stringify(state));      closeResetModal
       document.getElementById('currentMonthYear').innerText = fullDateText;
       
       render();
+      loadSharedState();
+      setInterval(loadSharedState, 3000);
     };
   </script>
 </body>

@@ -12,9 +12,14 @@ A private personal web tracker for our monthly food and contribution pact.
 ---
 
 ## ⏳ Monthly Auto-Reset Cycle
-- Runs strictly from the **23rd of each month to the 22nd of the next month**.
-- Remains completely checked and intact across the entire window (e.g., Nov 23 → Dec 22).
-- Automatically clears to a fresh `0/3` slate at 00:00 on every **23rd**.
+- Resets automatically when the calendar month changes.
+- Shared progress is stored in `deal-state.json`.
+
+## ☁️ Cross-device setup
+Deploy this project on Vercel and add these environment variables:
+- `GITHUB_TOKEN`: a fine-grained GitHub token with read/write access to `deal-state.json`
+- `GITHUB_REPO`: `Rishi-1010/treat-reporter`
+- `GITHUB_BRANCH`: `main`
 
 ---
 
