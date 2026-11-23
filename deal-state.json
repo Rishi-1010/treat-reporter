@@ -2,9 +2,9 @@
   "monthKey": "treat_deal_2026_11",
   "state": {
     "krishu": {
-      "treat1": true,
+      "treat1": false,
       "treat2": true,
-      "contri": false
+      "contri": true
     },
     "rishu": {
       "treat1": false,
