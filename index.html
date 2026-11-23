@@ -622,33 +622,46 @@
       return `treat_deal_${now.getFullYear()}_${now.getMonth() + 1}`;
     }
 
-    // Resolve the state file relative to this HTML file for generic static hosting.
-    const SHARED_STATE_URL = new URL('./deal-state.json', document.baseURI);
+    // Use one shared API endpoint for all devices.
+    const SHARED_DEAL_URL = new URL('/api/deal', document.baseURI);
 
-    // Load local state immediately, then optionally apply the static JSON state.
-    const localMonthState = localStorage.getItem(getMonthKey());
-    let state = JSON.parse(localMonthState) || JSON.parse(JSON.stringify(defaultState));
+    let state = JSON.parse(localStorage.getItem(getMonthKey())) || JSON.parse(JSON.stringify(defaultState));
 
-    function saveSharedState() {
+    async function saveSharedState() {
       localStorage.setItem(getMonthKey(), JSON.stringify(state));
+
+      try {
+        const response = await fetch(SHARED_DEAL_URL, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ monthKey: getMonthKey(), state })
+        });
+        if (!response.ok) {
+          throw new Error(`Shared save failed: ${response.status}`);
+        }
+      } catch (error) {
+        console.warn(error.message);
+      }
     }
 
     async function loadSharedState() {
       try {
-        SHARED_STATE_URL.searchParams.set('ts', Date.now().toString());
-        const response = await fetch(SHARED_STATE_URL, { cache: 'no-store' });
+        SHARED_DEAL_URL.searchParams.set('ts', Date.now().toString());
+        const response = await fetch(SHARED_DEAL_URL, { cache: 'no-store' });
         if (!response.ok) throw new Error(`Shared load failed: ${response.status}`);
 
         const shared = await response.json();
         if (!shared || !shared.state) return;
 
-        if (!localMonthState) {
-          const currentKey = getMonthKey();
-          if (shared.monthKey === currentKey) {
-            state = shared.state;
-          }
-          localStorage.setItem(currentKey, JSON.stringify(state));
+        const currentKey = getMonthKey();
+        if (shared.monthKey !== currentKey) {
+          state = JSON.parse(JSON.stringify(defaultState));
+          await saveSharedState();
+        } else {
+          state = shared.state;
         }
+
+        localStorage.setItem(currentKey, JSON.stringify(state));
         render();
       } catch (error) {
         console.warn(error.message);
@@ -863,6 +876,7 @@
       
       render();
       loadSharedState();
+      setInterval(loadSharedState, 3000);
     };
   </script>
 </body>
