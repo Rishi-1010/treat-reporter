@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Krishu vs Rishu - The Monthly Treat Deal</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            fredoka: ['Fredoka', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            krishu: {
+              light: '#FFF0F5',
+              card: '#FFE4E6',
+              border: '#FB7185',
+              primary: '#F43F5E',
+              accent: '#E11D48',
+              glow: '#fda4af'
+            },
+            rishu: {
+              light: '#F0F9FF',
+              card: '#E0F2FE',
+              border: '#38BDF8',
+              primary: '#0EA5E9',
+              accent: '#0284C7',
+              glow: '#7dd3fc'
+            }
+          },
+          keyframes: {
+            wiggle: {
+              '0%, 100%': { transform: 'rotate(-3deg)' },
+              '50%': { transform: 'rotate(3deg)' },
+            },
+            pop: {
+              '0%': { transform: 'scale(0.85)', opacity: '0.5' },
+              '50%': { transform: 'scale(1.08)' },
+              '100%': { transform: 'scale(1)', opacity: '1' },
+            },
+            stamp: {
+              '0%': { transform: 'scale(3) rotate(-20deg)', opacity: '0' },
+              '100%': { transform: 'scale(1) rotate(-8deg)', opacity: '1' }
+            }
+          },
+          animation: {
+            wiggle: 'wiggle 1s ease-in-out infinite',
+            pop: 'pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+            stamp: 'stamp 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    @font-face {
+      font-family: 'Curlz Local';
+      src: url('./Curlz.otf') format('opentype');
+      font-style: normal;
+      font-weight: 400 800;
+      font-display: swap;
+    }
+
+    body {
+      background: radial-gradient(circle at 20% 20%, #fdf4ff 0%, #f0fdf4 50%, #eff6ff 100%);
+      font-family: 'Fredoka', cursive, sans-serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: 'Fredoka', cursive, sans-serif;
+    }
+    
+    /* Playful 3D button effect */
+    .bouncy-btn {
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 8px 0px rgba(0,0,0,0.15), 0 12px 20px rgba(0,0,0,0.08);
+    }
+    .bouncy-btn:active {
+      transform: translateY(6px);
+      box-shadow: 0 2px 0px rgba(0,0,0,0.15), 0 4px 10px rgba(0,0,0,0.08);
+    }
+    
+    .card-shadow {
+      box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.1), 0 0 0 4px #ffffff;
+    }
+
+    /* Comic banner */
+    .comic-banner {
+      box-shadow: 4px 6px 0px #000000;
+    }
+
+    /* Toast overlay */
+    #celebrationToast {
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+      transform: translate(-50%, -100px) scale(0.8);
+      opacity: 0;
+      pointer-events: none;
+    }
+    #celebrationToast.show {
+      transform: translate(-50%, 0) scale(1);
+      opacity: 1;
+    }
+
+    /* Cute black theme */
+    :root {
+      color-scheme: dark;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 8% 8%, rgba(244, 63, 94, 0.18), transparent 25rem),
+        radial-gradient(circle at 92% 18%, rgba(14, 165, 233, 0.16), transparent 24rem),
+        radial-gradient(circle at 50% 100%, rgba(168, 85, 247, 0.12), transparent 28rem),
+        #09090b;
+      color: #f4f4f5;
+    }
+
+    body::before {
+      content: "✦  ˚  ✧  ˚  ✦  ˚  ✧";
+      position: fixed;
+      inset: 0;
+      color: rgba(255, 255, 255, 0.16);
+      font-size: 1.4rem;
+      letter-spacing: 3rem;
+      line-height: 7rem;
+      padding: 1rem;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .card-shadow {
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+
+    .comic-banner {
+      box-shadow: 4px 6px 0 #000, 0 0 22px rgba(244, 63, 94, 0.14);
+    }
+
+    #celebrationToast {
+      background: #27272a !important;
+      color: #fafafa !important;
+      border-color: #71717a !important;
+    }
+
+    main > section [id$="Badge"] {
+      background: rgba(63, 63, 70, 0.7) !important;
+      color: #e4e4e7 !important;
+      border-color: #71717a !important;
+    }
+
+    header > div {
+      background: rgba(24, 24, 27, 0.9) !important;
+      border-color: #3f3f46 !important;
+    }
+
+    header h1 {
+      color: #fafafa !important;
+      text-shadow: 0 0 24px rgba(244, 63, 94, 0.25);
+    }
+
+    header p {
+      color: #a1a1aa !important;
+    }
+
+    header p .text-slate-400 {
+      color: #52525b !important;
+    }
+
+    main > section {
+      background: linear-gradient(145deg, rgba(24, 24, 27, 0.98), rgba(15, 15, 18, 0.98)) !important;
+      border-color: #3f3f46 !important;
+    }
+
+    main > section:first-child {
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45), 0 0 36px rgba(244, 63, 94, 0.12);
+    }
+
+    main > section:last-child {
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45), 0 0 36px rgba(14, 165, 233, 0.12);
+    }
+
+    main > section > div:first-child {
+      border-color: #3f3f46 !important;
+    }
+
+    main > section .bg-white {
+      background: rgba(39, 39, 42, 0.82) !important;
+      border-color: #52525b !important;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
+    }
+
+    main > section .bg-white:hover {
+      transform: translateY(-2px);
+      border-color: #71717a !important;
+    }
+
+    main > section h3 {
+      color: #fafafa !important;
+    }
+
+    main > section p,
+    main > section .text-slate-500,
+    main > section .text-slate-400 {
+      color: #a1a1aa !important;
+    }
+
+    main > section .bg-white\/70 {
+      background: rgba(39, 39, 42, 0.68) !important;
+      border-color: #52525b !important;
+    }
+
+    footer > div {
+      background: rgba(24, 24, 27, 0.92) !important;
+      border-color: #3f3f46 !important;
+    }
+
+    footer .text-slate-600 {
+      color: #d4d4d8 !important;
+    }
+
+    footer .text-slate-400 {
+      color: #71717a !important;
+    }
+
+    footer button {
+      background: #27272a !important;
+      color: #e4e4e7 !important;
+      border-color: #52525b !important;
+    }
+
+    footer button:hover {
+      background: #3f3f46 !important;
+    }
+
+    #resetModal > div {
+      background: #18181b !important;
+      border-color: #52525b !important;
+    }
+
+    #resetModal h3 {
+      color: #fafafa !important;
+    }
+
+    #resetModal p {
+      color: #a1a1aa !important;
+    }
+
+    #resetModal button:first-child {
+      background: #27272a !important;
+      color: #e4e4e7 !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between p-3 sm:p-6 overflow-x-hidden">
+
+  <!-- Floating Toast for Huge Celebrations -->
+  <div id="celebrationToast" class="fixed top-6 left-1/2 z-50 px-6 py-3.5 bg-yellow-400 text-slate-900 font-extrabold text-lg sm:text-2xl rounded-full border-4 border-black comic-banner flex items-center gap-3 shadow-2xl">
+    <span id="toastIcon" class="text-2xl sm:text-3xl animate-bounce">🍕</span>
+    <span id="toastText">ONE TREATTT DONE!</span>
+  </div>
+
+  <!-- Header -->
+  <header class="max-w-4xl mx-auto w-full text-center mt-2 mb-6">
+    <div class="inline-flex items-center gap-2 bg-white/90 backdrop-blur px-5 py-2 rounded-full border-2 border-slate-900 comic-banner mb-3 transform -rotate-1">
+      <span class="text-xl">🤝</span>
+      <span class="text-sm sm:text-base font-bold tracking-wide uppercase text-slate-700">Monthly Food Pact</span>
+      <span class="text-xl">🍕</span>
+    </div>
+
+    <h1 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 drop-shadow-sm">
+      KRISHU <span class="text-rose-500">VS</span> RISHU
+    </h1>
+    
+    <p class="text-base sm:text-lg font-semibold text-slate-600 mt-1 flex items-center justify-center gap-2">
+      <i class="fa-solid fa-calendar-check text-indigo-500"></i>
+      <span id="currentMonthYear">November 2026</span>
+      <span class="text-slate-400">•</span>
+      <span class="text-amber-600 font-bold">2 Treats + 1 Contri Each</span>
+    </p>
+  </header>
+
+  <!-- Main Dual Grid Container -->
+  <main class="max-w-5xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-8 items-start">
+
+    <!-- ==================== KRISHU SECTION ==================== -->
+    <section class="bg-gradient-to-b from-rose-50 via-pink-50 to-white rounded-3xl p-5 sm:p-7 border-4 border-rose-300 card-shadow relative overflow-hidden">
+      <!-- Glow decoration -->
+      <div class="absolute -right-16 -top-16 w-36 h-36 bg-rose-200/50 rounded-full blur-2xl pointer-events-none"></div>
+
+      <!-- Avatar & Title -->
+      <div class="flex items-center justify-between border-b-2 border-rose-200 pb-4 mb-5">
+        <div class="flex items-center gap-3">
+          <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-400 flex items-center justify-center text-3xl shadow-md border-2 border-white transform -rotate-3">
+            😎
+          </div>
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-black text-rose-600 tracking-wide">KRISHU</h2>
+            <div id="krishuBadge" class="inline-block mt-0.5 px-3 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-700 border border-rose-200">
+              Still dodging... 👀
+            </div>
+          </div>
+        </div>
+
+        <div class="text-right">
+          <span class="text-xs uppercase tracking-wider font-extrabold text-slate-400 block">Vibe check</span>
+          <span id="krishuScore" class="text-2xl sm:text-3xl font-black text-rose-600">0/3</span>
+        </div>
+      </div>
+
+      <!-- Interactive Quota Cards -->
+      <div class="space-y-4">
+        
+        <!-- Krishu Treat 1 -->
+        <div id="krishu-treat1-card" class="bg-white rounded-2xl p-4 border-3 border-rose-200 shadow-sm transition-all duration-200 relative">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl sm:text-4xl">🍕</span>
+              <div>
+                <h3 class="font-bold text-lg sm:text-xl text-slate-800 leading-tight">Treat #1</h3>
+                <p id="krishu-treat1-sub" class="text-xs sm:text-sm font-semibold text-slate-500">Krishu owes the yum</p>
+              </div>
+            </div>
+            
+            <button onclick="toggleDeal('krishu', 'treat1')" 
+                    id="krishu-treat1-btn" 
+                    class="bouncy-btn px-4 py-2.5 rounded-xl font-black text-sm sm:text-base bg-rose-500 hover:bg-rose-600 text-white flex items-center gap-2 border-2 border-rose-600">
+              <i class="fa-solid fa-check"></i>
+              <span>GOT IT!</span>
+            </button>
+          </div>
+          <div id="krishu-treat1-stamp" class="hidden absolute top-2 right-4 pointer-events-none transform -rotate-12">
+            <span class="bg-rose-500 text-white font-black text-xs sm:text-sm px-2.5 py-1 rounded-md border-2 border-white shadow-md animate-stamp">
+              CRUSHED! 🔥
+            </span>
+          </div>
+        </div>
+
+        <!-- Krishu Treat 2 -->
+        <div id="krishu-treat2-card" class="bg-white rounded-2xl p-4 border-3 border-rose-200 shadow-sm transition-all duration-200 relative">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl sm:text-4xl">🍔</span>
+              <div>
+                <h3 class="font-bold text-lg sm:text-xl text-slate-800 leading-tight">Treat #2</h3>
+                <p id="krishu-treat2-sub" class="text-xs sm:text-sm font-semibold text-slate-500">Round two, bestie</p>
+              </div>
+            </div>
+            
+            <button onclick="toggleDeal('krishu', 'treat2')" 
+                    id="krishu-treat2-btn" 
+                    class="bouncy-btn px-4 py-2.5 rounded-xl font-black text-sm sm:text-base bg-rose-500 hover:bg-rose-600 text-white flex items-center gap-2 border-2 border-rose-600">
+              <i class="fa-solid fa-check"></i>
+              <span>GOT IT!</span>
+            </button>
+          </div>
+          <div id="krishu-treat2-stamp" class="hidden absolute top-2 right-4 pointer-events-none transform -rotate-12">
+            <span class="bg-rose-500 text-white font-black text-xs sm:text-sm px-2.5 py-1 rounded-md border-2 border-white shadow-md animate-stamp">
+              CRUSHED! 🔥
+            </span>
+          </div>
+        </div>
+
+        <!-- Krishu Contri -->
+        <div id="krishu-contri-card" class="bg-white rounded-2xl p-4 border-3 border-rose-200 shadow-sm transition-all duration-200 relative">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl sm:text-4xl">🤝</span>
+              <div>
+                <h3 class="font-bold text-lg sm:text-xl text-slate-800 leading-tight">Split the bill</h3>
+                <p id="krishu-contri-sub" class="text-xs sm:text-sm font-semibold text-slate-500">We split, no cap 🤝</p>
+              </div>
+            </div>
+            
+            <button onclick="toggleDeal('krishu', 'contri')" 
+                    id="krishu-contri-btn" 
+                    class="bouncy-btn px-4 py-2.5 rounded-xl font-black text-sm sm:text-base bg-amber-500 hover:bg-amber-600 text-white flex items-center gap-2 border-2 border-amber-600">
+              <i class="fa-solid fa-handshake"></i>
+              <span>PAID UP!</span>
+            </button>
+          </div>
+          <div id="krishu-contri-stamp" class="hidden absolute top-2 right-4 pointer-events-none transform -rotate-12">
+            <span class="bg-amber-500 text-white font-black text-xs sm:text-sm px-2.5 py-1 rounded-md border-2 border-white shadow-md animate-stamp">
+              SORTED! 💸
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Krishu Footer Banter -->
+      <div id="krishuRoast" class="mt-5 text-center p-2.5 rounded-xl bg-white/70 border border-rose-200 font-bold text-xs sm:text-sm text-rose-700">
+        "Bestie, the snacks aren't gonna buy themselves!" 😭
+      </div>
+    </section>
+
+    <!-- ==================== RISHU SECTION ==================== -->
+    <section class="bg-gradient-to-b from-sky-50 via-cyan-50 to-white rounded-3xl p-5 sm:p-7 border-4 border-sky-300 card-shadow relative overflow-hidden">
+      <!-- Glow decoration -->
+      <div class="absolute -right-16 -top-16 w-36 h-36 bg-sky-200/50 rounded-full blur-2xl pointer-events-none"></div>
+
+      <!-- Avatar & Title -->
+      <div class="flex items-center justify-between border-b-2 border-sky-200 pb-4 mb-5">
+        <div class="flex items-center gap-3">
+          <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-cyan-400 flex items-center justify-center text-3xl shadow-md border-2 border-white transform rotate-3">
+            🥳
+          </div>
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-black text-sky-600 tracking-wide">RISHU</h2>
+            <div id="rishuBadge" class="inline-block mt-0.5 px-3 py-0.5 rounded-full text-xs font-bold bg-sky-100 text-sky-700 border border-sky-200">
+              Still dodging... 👀
+            </div>
+          </div>
+        </div>
+
+        <div class="text-right">
+          <span class="text-xs uppercase tracking-wider font-extrabold text-slate-400 block">Vibe check</span>
+          <span id="rishuScore" class="text-2xl sm:text-3xl font-black text-sky-600">0/3</span>
+        </div>
+      </div>
+
+      <!-- Interactive Quota Cards -->
+      <div class="space-y-4">
+        
+        <!-- Rishu Treat 1 -->
+        <div id="rishu-treat1-card" class="bg-white rounded-2xl p-4 border-3 border-sky-200 shadow-sm transition-all duration-200 relative">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl sm:text-4xl">🍕</span>
+              <div>
+                <h3 class="font-bold text-lg sm:text-xl text-slate-800 leading-tight">Treat #1</h3>
+                <p id="rishu-treat1-sub" class="text-xs sm:text-sm font-semibold text-slate-500">Rishu owes the yum</p>
+              </div>
+            </div>
+            
+            <button onclick="toggleDeal('rishu', 'treat1')" 
+                    id="rishu-treat1-btn" 
+                    class="bouncy-btn px-4 py-2.5 rounded-xl font-black text-sm sm:text-base bg-sky-500 hover:bg-sky-600 text-white flex items-center gap-2 border-2 border-sky-600">
+              <i class="fa-solid fa-check"></i>
+              <span>GOT IT!</span>
+            </button>
+          </div>
+          <div id="rishu-treat1-stamp" class="hidden absolute top-2 right-4 pointer-events-none transform -rotate-12">
+            <span class="bg-sky-500 text-white font-black text-xs sm:text-sm px-2.5 py-1 rounded-md border-2 border-white shadow-md animate-stamp">
+              CRUSHED! 🔥
+            </span>
+          </div>
+        </div>
+
+        <!-- Rishu Treat 2 -->
+        <div id="rishu-treat2-card" class="bg-white rounded-2xl p-4 border-3 border-sky-200 shadow-sm transition-all duration-200 relative">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl sm:text-4xl">🍔</span>
+              <div>
+                <h3 class="font-bold text-lg sm:text-xl text-slate-800 leading-tight">Treat #2</h3>
+                <p id="rishu-treat2-sub" class="text-xs sm:text-sm font-semibold text-slate-500">Round two, let's gooo</p>
+              </div>
+            </div>
+            
+            <button onclick="toggleDeal('rishu', 'treat2')" 
+                    id="rishu-treat2-btn" 
+                    class="bouncy-btn px-4 py-2.5 rounded-xl font-black text-sm sm:text-base bg-sky-500 hover:bg-sky-600 text-white flex items-center gap-2 border-2 border-sky-600">
+              <i class="fa-solid fa-check"></i>
+              <span>GOT IT!</span>
+            </button>
+          </div>
+          <div id="rishu-treat2-stamp" class="hidden absolute top-2 right-4 pointer-events-none transform -rotate-12">
+            <span class="bg-sky-500 text-white font-black text-xs sm:text-sm px-2.5 py-1 rounded-md border-2 border-white shadow-md animate-stamp">
+              CRUSHED! 🔥
+            </span>
+          </div>
+        </div>
+
+        <!-- Rishu Contri -->
+        <div id="rishu-contri-card" class="bg-white rounded-2xl p-4 border-3 border-sky-200 shadow-sm transition-all duration-200 relative">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl sm:text-4xl">🤝</span>
+              <div>
+                <h3 class="font-bold text-lg sm:text-xl text-slate-800 leading-tight">Split the bill</h3>
+                <p id="rishu-contri-sub" class="text-xs sm:text-sm font-semibold text-slate-500">We split, no cap 🤝</p>
+              </div>
+            </div>
+            
+            <button onclick="toggleDeal('rishu', 'contri')" 
+                    id="rishu-contri-btn" 
+                    class="bouncy-btn px-4 py-2.5 rounded-xl font-black text-sm sm:text-base bg-amber-500 hover:bg-amber-600 text-white flex items-center gap-2 border-2 border-amber-600">
+              <i class="fa-solid fa-handshake"></i>
+              <span>PAID UP!</span>
+            </button>
+          </div>
+          <div id="rishu-contri-stamp" class="hidden absolute top-2 right-4 pointer-events-none transform -rotate-12">
+            <span class="bg-amber-500 text-white font-black text-xs sm:text-sm px-2.5 py-1 rounded-md border-2 border-white shadow-md animate-stamp">
+              SORTED! 💸
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Rishu Footer Banter -->
+      <div id="rishuRoast" class="mt-5 text-center p-2.5 rounded-xl bg-white/70 border border-sky-200 font-bold text-xs sm:text-sm text-sky-700">
+        "No snack, no peace. You know the rules!" 😤
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Action Bar -->
+  <footer class="max-w-xl mx-auto w-full text-center pb-4">
+    <div class="bg-white/90 backdrop-blur rounded-2xl p-4 border-2 border-slate-900 comic-banner flex flex-wrap items-center justify-between gap-3">
+      <div class="text-left text-xs font-semibold text-slate-600">
+        <span>Oopsie?</span>
+        <span class="block text-slate-400">Tap it again and pretend it never happened.</span>
+      </div>
+      <button onclick="confirmResetMonth()" 
+              class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-all flex items-center gap-2">
+        <i class="fa-solid fa-rotate-left"></i>
+        <span>Reset For New Month</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- Custom Confirmation Modal (No alert/confirm) -->
+  <div id="resetModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 max-w-sm w-full border-4 border-slate-900 comic-banner text-center transform scale-95 transition-transform duration-200" id="resetModalBox">
+      <div class="w-16 h-16 mx-auto mb-3 bg-red-100 rounded-full flex items-center justify-center text-3xl">
+        🔄
+      </div>
+      <h3 class="text-xl font-black text-slate-900 mb-1">Fresh month, who dis?</h3>
+      <p class="text-sm font-medium text-slate-600 mb-5">
+        This wipes the scoreboard for both of you. Fresh month, fresh snacks, zero excuses. Deal?
+      </p>
+      <div class="flex gap-3">
+        <button onclick="closeResetModal()" class="flex-1 py-2.5 rounded-xl font-bold bg-slate-100 hover:bg-slate-200 text-slate-700">
+          Nah, keep it
+        </button>
+        <button onclick="executeResetMonth()" class="flex-1 py-2.5 rounded-xl font-black bg-rose-500 hover:bg-rose-600 text-white">
+          Fresh start!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sound FX using Web Audio API (no external asset dependencies)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playTone(type) {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      if (type === 'pop') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(320, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+      } else if (type === 'fanfare') {
+        const notes = [440, 554, 659, 880];
+        notes.forEach((freq, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.08);
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime + i * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.08 + 0.3);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(audioCtx.currentTime + i * 0.08);
+          osc.stop(audioCtx.currentTime + i * 0.08 + 0.35);
+        });
+      } else if (type === 'undo') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+      }
+    }
+
+// Default deal state
+    const defaultState = {
+      krishu: { treat1: false, treat2: false, contri: false },
+      rishu: { treat1: false, treat2: false, contri: false }
+    };
+
+    // Unique key per calendar month (e.g. "treat_deal_2026_11")
+    function getMonthKey() {
+      const now = new Date();
+      return `treat_deal_${now.getFullYear()}_${now.getMonth() + 1}`;
+    }
+
+    // Auto-resets on the 1st because the month key changes automatically
+    function checkMonthRollover() {
+      const currentKey = getMonthKey();
+      const savedMonth = localStorage.getItem('current_active_month');
+
+      if (savedMonth !== currentKey) {
+        localStorage.setItem('current_active_month', currentKey);
+        state = JSON.parse(JSON.stringify(defaultState));
+        localStorage.setItem(currentKey, JSON.stringify(state));
+      }
+    }
+
+    // Load active month state
+    let state = JSON.parse(localStorage.getItem(getMonthKey())) || JSON.parse(JSON.stringify(defaultState));
+    // Celebration Messages
+    const celebratoryQuotes = {
+      treat1: {
+        krishu: ["ONE TREATTT DONE! 🍕🎉", "KRISHU FED US! 🍕🔥", "FIRST TREAT IN THE BAG! 😋"],
+        rishu: ["ONE TREATTT DONE! 🍕🎉", "RISHU CLUTCHED TREAT #1! 🍕🔥", "FIRST TREAT GONE! 😋"]
+      },
+      treat2: {
+        krishu: ["SECOND TREATTT CRUSHED! 🍔🔥", "DOUBLE TREAT HERO! 🏆✨", "NO MORE TREAT DEBT! 🎉"],
+        rishu: ["SECOND TREATTT CRUSHED! 🍔🔥", "RISHU CAME THROUGH! 🏆✨", "SECOND TREAT UNLOCKED! 🎉"]
+      },
+      contri: {
+        krishu: ["CONTRI SORTEDDD! 🤝💸", "KRISHU CHIPPED IN! 💰✨", "MONEY IN THE POT! 💸"],
+        rishu: ["CONTRI SORTEDDD! 🤝💸", "RISHU PAID UP! 💰✨", "CONTRI ACCOMPLISHED! 💸"]
+      }
+    };
+
+    // Confetti blast
+    function triggerConfetti(person) {
+      const colors = person === 'krishu' 
+        ? ['#f43f5e', '#fb7185', '#ffe4e6', '#fbbf24'] 
+        : ['#0ea5e9', '#38bdf8', '#e0f2fe', '#34d399'];
+
+      confetti({
+        particleCount: 75,
+        spread: 60,
+        origin: { y: 0.65 },
+        colors: colors,
+        disableForReducedMotion: true
+      });
+    }
+
+    // Toast Trigger
+    let toastTimeout;
+    function showCelebration(text, icon = '🎉') {
+      const toast = document.getElementById('celebrationToast');
+      const toastText = document.getElementById('toastText');
+      const toastIcon = document.getElementById('toastIcon');
+
+      toastText.innerText = text;
+      toastIcon.innerText = icon;
+
+      toast.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2600);
+    }
+
+    // Toggle Deal Item
+    function toggleDeal(person, itemKey) {
+      const isAlreadyDone = state[person][itemKey];
+      state[person][itemKey] = !isAlreadyDone;
+
+      // Save to localStorage
+// Save to month-specific key
+      localStorage.setItem(getMonthKey(), JSON.stringify(state));
+
+      if (!isAlreadyDone) {
+        // Celebrating action!
+        playTone('pop');
+        triggerConfetti(person);
+
+        let icon = '🍕';
+        if (itemKey === 'treat2') icon = '🍔';
+        if (itemKey === 'contri') icon = '💸';
+
+        const quotes = celebratoryQuotes[itemKey][person];
+        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+        showCelebration(randomQuote, icon);
+
+        // Check if all 3 done for that person
+        const total = (state[person].treat1 ? 1 : 0) + (state[person].treat2 ? 1 : 0) + (state[person].contri ? 1 : 0);
+        if (total === 3) {
+          setTimeout(() => {
+            playTone('fanfare');
+            showCelebration(`${person.toUpperCase()} CLEARED ALL DEBTS THIS MONTH! 👑🐐`, '👑');
+          }, 1200);
+        }
+      } else {
+        // Undo action
+        playTone('undo');
+        showCelebration(`Oops, rolled that one back! ↩️`, '👀');
+      }
+
+      render();
+    }
+
+    // Render UI based on state
+    function render() {
+      ['krishu', 'rishu'].forEach(person => {
+        const pState = state[person];
+        const isKrishu = person === 'krishu';
+        const colorName = isKrishu ? 'rose' : 'sky';
+
+        let count = 0;
+
+        // Treat 1
+        const t1Done = pState.treat1;
+        if (t1Done) count++;
+        renderItem(person, 'treat1', t1Done, 'GOT IT! 🍕', 'ONE TREATTT DONE! ✓', colorName);
+
+        // Treat 2
+        const t2Done = pState.treat2;
+        if (t2Done) count++;
+        renderItem(person, 'treat2', t2Done, 'GOT IT! 🍔', 'SECOND TREATTT DONE! ✓', colorName);
+
+        // Contri
+        const cDone = pState.contri;
+        if (cDone) count++;
+        renderItem(person, 'contri', cDone, 'PAID UP! 🤝', 'CONTRI SORTEDDD! ✓', 'amber');
+
+        // Total score & badges
+        const scoreElem = document.getElementById(`${person}Score`);
+        scoreElem.innerText = `${count}/3`;
+
+        const badgeElem = document.getElementById(`${person}Badge`);
+        const roastElem = document.getElementById(`${person}Roast`);
+
+        if (count === 3) {
+          badgeElem.className = `inline-block mt-0.5 px-3 py-0.5 rounded-full text-xs font-black bg-emerald-100 text-emerald-700 border border-emerald-300`;
+          badgeElem.innerHTML = `👑 Legend! Fully Done`;
+          roastElem.innerHTML = `“Big W. You're officially off the snack hook!” 🥂🎉`;
+          roastElem.className = `mt-5 text-center p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 font-extrabold text-xs sm:text-sm text-emerald-800`;
+        } else if (count === 2) {
+          badgeElem.className = `inline-block mt-0.5 px-3 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 border border-indigo-300`;
+          badgeElem.innerHTML = `One more, don't flop! (2/3)`;
+          roastElem.innerHTML = `“Just one more bite-sized mission. Lock in!” 🔥`;
+          roastElem.className = `mt-5 text-center p-2.5 rounded-xl bg-indigo-50 border border-indigo-200 font-bold text-xs sm:text-sm text-indigo-700`;
+        } else if (count === 1) {
+          badgeElem.className = `inline-block mt-0.5 px-3 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300`;
+          badgeElem.innerHTML = `One down, two to go! (1/3)`;
+          roastElem.innerHTML = `“Okayyy, we see the effort. Two more snack quests!” 🍕🍟`;
+          roastElem.className = `mt-5 text-center p-2.5 rounded-xl bg-amber-50 border border-amber-200 font-bold text-xs sm:text-sm text-amber-800`;
+        } else {
+          badgeElem.className = `inline-block mt-0.5 px-3 py-0.5 rounded-full text-xs font-bold bg-slate-200 text-slate-700 border border-slate-300`;
+          badgeElem.innerHTML = `Still dodging... 👀`;
+          roastElem.innerHTML = `“No snack, no peace. You know the rules!” 😤`;
+          roastElem.className = `mt-5 text-center p-2.5 rounded-xl bg-white/70 border border-${colorName}-200 font-bold text-xs sm:text-sm text-${colorName}-700`;
+        }
+      });
+    }
+
+    function renderItem(person, itemKey, isDone, pendingText, doneText, activeColor) {
+      const card = document.getElementById(`${person}-${itemKey}-card`);
+      const btn = document.getElementById(`${person}-${itemKey}-btn`);
+      const stamp = document.getElementById(`${person}-${itemKey}-stamp`);
+      const sub = document.getElementById(`${person}-${itemKey}-sub`);
+
+      if (isDone) {
+        // Done appearance
+        card.classList.add('border-emerald-400', 'bg-emerald-50/50');
+        stamp.classList.remove('hidden');
+
+        btn.className = `bouncy-btn px-4 py-2.5 rounded-xl font-black text-xs sm:text-sm bg-emerald-500 hover:bg-emerald-600 text-white flex items-center gap-2 border-2 border-emerald-600`;
+        btn.innerHTML = `<i class="fa-solid fa-circle-check text-base"></i> <span>DONE!</span>`;
+        sub.innerHTML = `<span class="text-emerald-700 font-bold">${doneText}</span>`;
+      } else {
+        // Pending appearance
+        card.classList.remove('border-emerald-400', 'bg-emerald-50/50');
+        stamp.classList.add('hidden');
+
+        const bgCol = activeColor === 'rose' ? 'bg-rose-500 hover:bg-rose-600 border-rose-600' :
+                      activeColor === 'sky'  ? 'bg-sky-500 hover:bg-sky-600 border-sky-600' :
+                                               'bg-amber-500 hover:bg-amber-600 border-amber-600';
+
+        btn.className = `bouncy-btn px-4 py-2.5 rounded-xl font-black text-xs sm:text-sm ${bgCol} text-white flex items-center gap-2 border-2`;
+        btn.innerHTML = `<i class="fa-solid fa-hand-pointer"></i> <span>${pendingText}</span>`;
+        sub.innerHTML = itemKey === 'contri'
+          ? `We split, no cap 🤝`
+          : `${person.charAt(0).toUpperCase() + person.slice(1)} owes the yum`;
+      }
+    }
+
+    // Modal controls for monthly reset
+    function confirmResetMonth() {
+      const modal = document.getElementById('resetModal');
+      modal.classList.remove('hidden');
+    }
+
+    function closeResetModal() {
+      const modal = document.getElementById('resetModal');
+      modal.classList.add('hidden');
+    }
+
+    function executeResetMonth() {
+      state = {
+        krishu: { treat1: false, treat2: false, contri: false },
+        rishu: { treat1: false, treat2: false, contri: false }
+      };
+localStorage.setItem(getMonthKey(), JSON.stringify(state));      closeResetModal();
+      showCelebration("NEW MONTH READY! GAME ON! 🍕🔥", "🚀");
+      playTone('fanfare');
+      render();
+    }
+
+// Dynamic Month & Current Date Header + 1st-of-Month Auto-Reset Check
+    window.onload = function() {
+      checkMonthRollover();
+
+      const now = new Date();
+      const monthNames = [
+        "January", "February", "March", "April", "May", "June", 
+        "July", "August", "September", "October", "November", "December"
+      ];
+      
+      // Formats to: "23 November 2026"
+      const fullDateText = `${now.getDate()} ${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+      document.getElementById('currentMonthYear').innerText = fullDateText;
+      
+      render();
+    };
+  </script>
+</body>
+</html>
