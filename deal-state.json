@@ -8,7 +8,7 @@
     },
     "rishu": {
       "treat1": false,
-      "treat2": false,
+      "treat2": true,
       "contri": false
     }
   }
